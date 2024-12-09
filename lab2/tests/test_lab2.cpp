@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "../include/Five.h"
 
+
 TEST(FiveTest, ConstructorDefault) {
     Five five;
     ASSERT_EQ(five.to_string(), "0");

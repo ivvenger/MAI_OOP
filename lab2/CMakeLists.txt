@@ -20,8 +20,7 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-
-add_library(${CMAKE_PROJECT_NAME}_lib src/lab2.cpp)
+add_library(${CMAKE_PROJECT_NAME}_lib src/Five.cpp)
 add_executable(${CMAKE_PROJECT_NAME}_exe main.cpp)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}_exe PRIVATE ${CMAKE_PROJECT_NAME}_lib)
@@ -29,8 +28,8 @@ target_link_libraries(${CMAKE_PROJECT_NAME}_exe PRIVATE ${CMAKE_PROJECT_NAME}_li
 # Добавление тестов
 enable_testing()
 
-add_executable(lab2_tests tests/tests2.cpp)
-target_link_libraries(tests2 ${CMAKE_PROJECT_NAME}_lib gtest_main)
+add_executable(lab2_tests tests/test_lab2.cpp)
+target_link_libraries(lab2_tests ${CMAKE_PROJECT_NAME}_lib gtest_main)
 
 
 add_test(NAME MyProjectTests COMMAND lab2_tests)
