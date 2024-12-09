@@ -1,20 +1,45 @@
-#include <iostream>
-#ifndef DYNAMIC_ARRAY_INTERFACE_H
-#define DYNAMIC_ARRAY_INTERFACE_H
+#ifndef FIVE_H
+#define FIVE_H
 
-class DynamicArrayInterface {
+#include <iostream>
+#include <vector>
+#include <stdexcept>
+#include <initializer_list>
+#include <string>
+
+using namespace std;
+
+class Five {
 public:
-    virtual ~DynamicArrayInterface() = default;
-    virtual void append(unsigned char value) = 0;
-    virtual unsigned char get(int index) const = 0;
-    virtual void set(int index, unsigned char value) = 0;
-    virtual int size() const = 0;
-    virtual DynamicArrayInterface* add(const DynamicArrayInterface& other) const = 0;
-    virtual DynamicArrayInterface* subtract(const DynamicArrayInterface& other) const = 0;
-    virtual bool equals(const DynamicArrayInterface& other) const = 0;
-    virtual bool lessThan(const DynamicArrayInterface& other) const = 0;
-    virtual bool greaterThan(const DynamicArrayInterface& other) const = 0;
-    virtual DynamicArrayInterface* copy() const = 0;
+    Five();
+    Five(const size_t & n, unsigned char t = 0);
+    Five(const initializer_list<unsigned char> &t);
+    Five(const string &t);
+    Five(const Five& other);
+    Five(Five&& other) noexcept;
+    ~Five() noexcept;
+
+    Five& operator=(const Five& other);
+    Five& operator=(Five&& other) noexcept;
+    Five operator+(const Five& other) const;
+    Five operator-(const Five& other) const;
+    Five& operator+=(const Five& other);
+    Five& operator-=(const Five& other);
+
+    bool operator==(const Five& other) const;
+    bool operator!=(const Five& other) const;
+    bool operator<(const Five& other) const;
+    bool operator>(const Five& other) const;
+    bool operator<=(const Five& other) const;
+    bool operator>=(const Five& other) const;
+    friend ostream& operator<<(ostream& os, const Five& five);
+    friend istream& operator>>(istream& is, Five& five);
+    string to_string() const;
+
+private:
+    vector<unsigned char> digits;
+    void normalize();
+    void validateDigit(unsigned char digit) const;
 };
 
 #endif

@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
-project(lab2)
-set(CUR_PR "lab2")
+project(gtest)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 
 # Добавление опций компиляции
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=maybe-uninitialized")
@@ -20,16 +20,17 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-# Подключение библиотек
-file(GLOB_RECURSE SOURCES LIST_DIRECTORIES false src/*.cpp)
-add_library(${CUR_PR}_lib ${SOURCES})
 
-add_executable(${CUR_PR}_exe main.cpp)
-target_link_libraries(${CUR_PR}_exe PRIVATE ${CUR_PR}_lib)
+add_library(${CMAKE_PROJECT_NAME}_lib src/lab2.cpp)
+add_executable(${CMAKE_PROJECT_NAME}_exe main.cpp)
+
+target_link_libraries(${CMAKE_PROJECT_NAME}_exe PRIVATE ${CMAKE_PROJECT_NAME}_lib)
 
 # Добавление тестов
-add_executable(${CUR_PR}_tests tests/test_${CUR_PR}.cpp)
-target_link_libraries(${CUR_PR}_tests ${CUR_PR}_lib gtest_main)
+enable_testing()
 
-# Добавление тестов в тестовый набор
-add_test(NAME ${CUR_PR}tests COMMAND ${CUR_PR}_tests)
+add_executable(lab2_tests tests/tests2.cpp)
+target_link_libraries(tests2 ${CMAKE_PROJECT_NAME}_lib gtest_main)
+
+
+add_test(NAME MyProjectTests COMMAND lab2_tests)
