@@ -1,13 +1,38 @@
 cmake_minimum_required(VERSION 3.10)
+project(lab3)
+set(CUR_PR "lab3")
 
-project(CppLab)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_STANDARD 11)
+# Добавление опций компиляции
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=maybe-uninitialized")
 
-add_executable(CppLab src/main.cpp src/Rectangle.cpp src/Trapezoid.cpp src/Rhombus.cpp src/Array.cpp)
+# Установка Google Test
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG v1.15.2
+  TLS_VERIFY false
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
-target_include_directories(CppLab PRIVATE include)
+# Подключение библиотек
+include_directories(include)
+file(GLOB_RECURSE SOURCES LIST_DIRECTORIES false src/*.cpp)
+add_library(${CUR_PR}_lib ${SOURCES})
 
-enable_testing()
+add_executable(${CUR_PR}_exe main.cpp)
+target_link_libraries(${CUR_PR}_exe PRIVATE ${CUR_PR}_lib)
 
-add_subdirectory(tests)
+# target_include_directories(${CUR_PR}_lib PRIVATE include)
+
+# Добавление тестов
+add_executable(${CUR_PR}_tests tests/test_${CUR_PR}.cpp)
+target_link_libraries(${CUR_PR}_tests ${CUR_PR}_lib gtest_main)
+
+# Добавление тестов в тестовый набор
+add_test(NAME ${CUR_PR}tests COMMAND ${CUR_PR}_tests)
