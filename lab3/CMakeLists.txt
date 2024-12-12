@@ -1,12 +1,4 @@
 cmake_minimum_required(VERSION 3.10)
-project(lab3)
-set(CUR_PR "lab3")
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# Добавление опций компиляции
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=maybe-uninitialized")
 
 # Установка Google Test
 include(FetchContent)
@@ -20,19 +12,23 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-# Подключение библиотек
+# Укажите имя вашего проекта
+project(BalagurFate3)
+
+# Укажите стандарт C++
+set(CMAKE_CXX_STANDARD 17)
+
+# Укажите директории с заголовочными файлами
 include_directories(include)
-file(GLOB_RECURSE SOURCES LIST_DIRECTORIES false src/*.cpp)
-add_library(${CUR_PR}_lib ${SOURCES})
 
-add_executable(${CUR_PR}_exe main.cpp)
-target_link_libraries(${CUR_PR}_exe PRIVATE ${CUR_PR}_lib)
+# Добавьте исходные файлы
+file(GLOB SOURCES "src/*.cpp")
 
-# target_include_directories(${CUR_PR}_lib PRIVATE include)
+# Создайте исполняемый файл
+add_executable(BalagurFate3 ${SOURCES} main.cpp)
 
-# Добавление тестов
-add_executable(${CUR_PR}_tests tests/test_${CUR_PR}.cpp)
-target_link_libraries(${CUR_PR}_tests ${CUR_PR}_lib gtest_main)
-
-# Добавление тестов в тестовый набор
-add_test(NAME ${CUR_PR}tests COMMAND ${CUR_PR}_tests)
+# Добавьте тесты
+enable_testing()
+add_executable(lab3_tests tests/test_lab3.cpp ${SOURCES})
+target_link_libraries(lab3_tests gtest gtest_main pthread)
+add_test(NAME lab3 COMMAND lab3_tests)

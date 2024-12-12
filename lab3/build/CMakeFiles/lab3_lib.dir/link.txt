@@ -1,2 +1,0 @@
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar qc liblab3_lib.a CMakeFiles/lab3_lib.dir/src/Array.cpp.o CMakeFiles/lab3_lib.dir/src/Rectangle.cpp.o CMakeFiles/lab3_lib.dir/src/Rhombus.cpp.o CMakeFiles/lab3_lib.dir/src/Trapezoid.cpp.o
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib liblab3_lib.a

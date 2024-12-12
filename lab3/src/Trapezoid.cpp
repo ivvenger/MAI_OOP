@@ -1,30 +1,64 @@
 #include "../include/Trapezoid.h"
+#include <cmath>
 
-void Trapezoid::calculate_geometric_center() const {
-    double x = (base1 + 2 * base2) / 3;
-    double y = height / 3;
-    std::cout << "Geometric center of Trapezoid: (" << x << ", " << y << ")\n";
+Trapezoid::Trapezoid() : Figure(), vertices(4, {0.0, 0.0}) {}
+
+Trapezoid::Trapezoid(const std::vector<std::pair<double, double>>& verts) : Figure(), vertices(verts) {}
+
+Trapezoid::Trapezoid(const Trapezoid& other) : Figure(other), vertices(other.vertices) {}
+
+Trapezoid::Trapezoid(Trapezoid&& other) noexcept : Figure(std::move(other)), vertices(std::move(other.vertices)) {}
+
+Trapezoid& Trapezoid::operator=(const Trapezoid& other) {
+    if (this != &other) {
+        Figure::operator=(other);
+        vertices = other.vertices;
+    }
+    return *this;
+}
+
+Trapezoid& Trapezoid::operator=(Trapezoid&& other) noexcept {
+    if (this != &other) {
+        Figure::operator=(std::move(other));
+        vertices = std::move(other.vertices);
+    }
+    return *this;
+}
+
+std::pair<double, double> Trapezoid::geometricCenter() const {
+    double x_sum = 0.0, y_sum = 0.0;
+    for (const auto& vert : vertices) {
+        x_sum += vert.first;
+        y_sum += vert.second;
+    }
+    return {x_sum / vertices.size(), y_sum / vertices.size()};
+}
+
+void Trapezoid::printVertices(std::ostream& os) const {
+    for (const auto& vert : vertices) {
+        os << "(" << vert.first << ", " << vert.second << ") ";
+    }
+}
+
+void Trapezoid::readVertices(std::istream& is) {
+    for (auto& vert : vertices) {
+        is >> vert.first >> vert.second;
+    }
 }
 
 double Trapezoid::area() const {
-    return 0.5 * (base1 + base2) * height;
+    double a = std::hypot(vertices[1].first - vertices[0].first, vertices[1].second - vertices[0].second);
+    double b = std::hypot(vertices[2].first - vertices[3].first, vertices[2].second - vertices[3].second);
+    double h = std::abs(vertices[1].second - vertices[0].second);
+    return (a + b) * h / 2.0;
 }
 
-std::ostream& operator<<(std::ostream& os, const Trapezoid& trap) {
-    os << "Trapezoid: base1 = " << trap.base1 << ", base2 = " << trap.base2 << ", height = " << trap.height;
-    return os;
-}
-
-std::istream& operator>>(std::istream& is, Trapezoid& trap) {
-    is >> trap.base1 >> trap.base2 >> trap.height;
-    return is;
-}
-
-Trapezoid* Trapezoid::clone() const {
+Figure* Trapezoid::clone() const {
     return new Trapezoid(*this);
 }
 
 bool Trapezoid::operator==(const Figure& other) const {
-    const Trapezoid* otherTrap = dynamic_cast<const Trapezoid*>(&other);
-    return otherTrap && base1 == otherTrap->base1 && base2 == otherTrap->base2 && height == otherTrap->height;
+    const Trapezoid* trap = dynamic_cast<const Trapezoid*>(&other);
+    if (!trap) return false;
+    return vertices == trap->vertices;
 }

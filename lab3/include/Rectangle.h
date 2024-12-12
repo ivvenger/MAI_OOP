@@ -1,42 +1,26 @@
 #ifndef RECTANGLE_H
 #define RECTANGLE_H
-
 #include "Figure.h"
 
 class Rectangle : public Figure {
 public:
-    Rectangle(double width = 0, double height = 0) : width(width), height(height) {}
+    Rectangle();
+    Rectangle(const std::vector<std::pair<double, double>>& vertices);
+    Rectangle(const Rectangle& other);
+    Rectangle(Rectangle&& other) noexcept;
+    Rectangle& operator=(const Rectangle& other);
+    Rectangle& operator=(Rectangle&& other) noexcept;
+    ~Rectangle() override = default;
 
-    void calculate_geometric_center() const override {
-        std::cout << "Geometric center of Rectangle: (" << width / 2 << ", " << height / 2 << ")\n";
-    }
-
-    double area() const override {
-        return width * height;
-    }
-
-    friend std::ostream& operator<<(std::ostream& os, const Rectangle& rect) {
-        os << "Rectangle: width = " << rect.width << ", height = " << rect.height;
-        return os;
-    }
-
-    friend std::istream& operator>>(std::istream& is, Rectangle& rect) {
-        is >> rect.width >> rect.height;
-        return is;
-    }
-
-    Rectangle* clone() const override {
-        return new Rectangle(*this);
-    }
-
-    bool operator==(const Figure& other) const override {
-        const Rectangle* otherRect = dynamic_cast<const Rectangle*>(&other);
-        return otherRect && width == otherRect->width && height == otherRect->height;
-    }
+    std::pair<double, double> geometricCenter() const override;
+    void printVertices(std::ostream& os) const override;
+    void readVertices(std::istream& is) override;
+    double area() const override;
+    Figure* clone() const override;
+    bool operator==(const Figure& other) const override;
 
 private:
-    double width;
-    double height;
+    std::vector<std::pair<double, double>> vertices;
 };
 
 #endif

@@ -1,49 +1,81 @@
+// main.cpp
+#include "include/Figure.h"
+#include "include/Rectangle.h"
+#include "include/Trapezoid.h"
+#include "include/Rhombus.h"
+#include "include/Array.h"
 #include <iostream>
-#include "Rectangle.h"
-#include "Trapezoid.h"
-#include "Rhombus.h"
-#include "Array.h"
-
-using namespace std;
+#include <memory>
 
 int main() {
-    Array array;
-    int num_figures;
-    cout << "Введите количество фигур: ";
-    cin >> num_figures;
+    Array<Figure> figures;
+    int choice;
 
-    for (int i = 0; i < num_figures; ++i) {
-        int type;
-        cout << "Введите тип фигуры (1 - Прямоугольник, 2 - Трапеция, 3 - Ромб): ";
-        cin >> type;
+    std::cout << "1. Добавить прямоугольник\n";
+    std::cout << "2. Добавить трапецию\n";
+    std::cout << "3. Добавить ромб\n";
+    std::cout << "4. Вывести фигуры\n";
+    std::cout << "5. Посчитать общую площадь\n";
+    std::cout << "6. Удаление фигуры по индексу\n";
+    std::cout << "7. Выход\n";
 
-        if (type == 1) {
+    while (true) {
+        std::cout << "\nВведите опцию: ";
+        std::cin >> choice;
+
+        if (choice == 1) {
+            std::cout << "Введите 4 вершины (x, y) для прямоугольника:\n";
             Rectangle* rect = new Rectangle();
-            cin >> *rect;
-            array.add_figure(rect);
-        } else if (type == 2) {
+            std::cin >> *rect;
+            figures.add(rect);
+        }
+        else if (choice == 2) {
+            std::cout << "Введите 4 вершины (x, y) для трапеции:\n";
             Trapezoid* trap = new Trapezoid();
-            cin >> *trap;
-            array.add_figure(trap);
-        } else if (type == 3) {
-            Rhombus* rhomb = new Rhombus();
-            cin >> *rhomb;
-            array.add_figure(rhomb);
-        } else {
-            cerr << "Такой тип фигуры не предусмотрен.\n";
+            std::cin >> *trap;
+            figures.add(trap);
+        }
+        else if (choice == 3) {
+            std::cout << "Введите 4 вершины (x, y) для ромба:\n";
+            Rhombus* rhom = new Rhombus();
+            std::cin >> *rhom;
+            figures.add(rhom);
+        }
+        else if (choice == 4) {
+            for (size_t i = 0; i < figures.size(); ++i) {
+                Figure* fig = figures.get(i);
+                std::cout << "Фигура " << i << ": " << *fig << "\n";
+                auto center = fig->geometricCenter();
+                std::cout << "Геометрический центр: (" << center.first << ", " << center.second << ")\n";
+                std::cout << "Площадь: " << static_cast<double>(*fig) << "\n";
+            }
+        }
+        else if (choice == 5) {
+            double total_area = 0.0;
+            for (size_t i = 0; i < figures.size(); ++i) {
+                total_area += static_cast<double>(*figures.get(i));
+            }
+            std::cout << "Общая площадь: " << total_area << "\n";
+        }
+        else if (choice == 6) {
+            size_t index;
+            std::cout << "Введите индекс для удаления: ";
+            std::cin >> index;
+            try {
+                figures.remove(index);
+                std::cout << "Фигура удалена.\n";
+            }
+            catch (const std::out_of_range& e) {
+                std::cout << e.what() << "\n";
+            }
+        }
+        else if (choice == 7) {
+            break;
+        }
+        else {
+            std::cout << "Недоступная опция.\n";
         }
     }
-
-    array.print_figures();
-    cout << "Общая площадь фигур: " << array.total_area() << '\n';
-
-    int index_to_remove;
-    cout << "Введите индекс фигуры для удаления: ";
-    cin >> index_to_remove;
-    array.remove_figure(index_to_remove);
-
-    array.print_figures();
-    cout << "Общая площадь фигур: " << array.total_area() << '\n';
 
     return 0;
 }
