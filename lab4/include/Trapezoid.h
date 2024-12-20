@@ -1,74 +1,95 @@
-#ifndef TRAPEZOID_H
-#define TRAPEZOID_H
-
+#pragma once
 #include "Figure.h"
+#include <memory>
+#include <cmath>
 
 template <Scalar T>
 class Trapezoid : public Figure<T> {
-public:
-    Trapezoid(const std::vector<std::unique_ptr<Point<T>>>& vertices) : vertices(vertices) {}
-
-    Trapezoid(const Trapezoid& other) {
-        vertices.reserve(other.vertices.size());
-        for (const auto& vertex : other.vertices) {
-            vertices.push_back(std::make_unique<Point<T>>(*vertex));
-        }
-    }
-
-    Trapezoid(Trapezoid&& other) noexcept : vertices(std::move(other.vertices)) {
-        other.vertices.clear();
-    }
-
-    Trapezoid& operator=(const Trapezoid& other) {
-        if (this != &other) {
-            vertices.clear();
-            vertices.reserve(other.vertices.size());
-            for (const auto& vertex : other.vertices) {
-                vertices.push_back(std::make_unique<Point<T>>(*vertex));
-            }
-        }
-        return *this;
-    }
-
-    Trapezoid& operator=(Trapezoid&& other) noexcept {
-        if (this != &other) {
-            vertices = std::move(other.vertices);
-            other.vertices.clear();
-        }
-        return *this;
-    }
-
-    std::pair<T, T> getGeometricCenter() const override {
-        T x = (vertices[0]->getX() + vertices[1]->getX() + vertices[2]->getX() + vertices[3]->getX()) / 4;
-        T y = (vertices[0]->getY() + vertices[1]->getY() + vertices[2]->getY() + vertices[3]->getY()) / 4;
-        return {x, y};
-    }
-
-    T getArea() const override {
-        T base1 = std::abs(vertices[1]->getX() - vertices[0]->getX());
-        T base2 = std::abs(vertices[3]->getX() - vertices[2]->getX());
-        T height = std::abs(vertices[2]->getY() - vertices[0]->getY());
-        return (base1 + base2) * height / 2;
-    }
-
-    void print(std::ostream& os) const override {
-        os << "Трапеция: ";
-        for (const auto& vertex : vertices) {
-            os << *vertex << " ";
-        }
-    }
-
-    void read(std::istream& is) override {
-        vertices.clear();
-        for (size_t i = 0; i < 4; ++i) {
-            auto point = std::make_unique<Point<T>>();
-            is >> *point;
-            vertices.push_back(std::move(point));
-        }
-    }
-
 private:
-    std::vector<std::unique_ptr<Point<T>>> vertices;
-};
+    std::unique_ptr<Point<T>> topLeft;
+    std::unique_ptr<Point<T>> topRight;
+    std::unique_ptr<Point<T>> bottomRight;
+    std::unique_ptr<Point<T>> bottomLeft;
 
-#endif
+public:
+    Trapezoid()
+        : topLeft(std::make_unique<Point<T>>()),
+          topRight(std::make_unique<Point<T>>()),
+          bottomRight(std::make_unique<Point<T>>()),
+          bottomLeft(std::make_unique<Point<T>>()) {}
+
+    Trapezoid(const Point<T>& tl, const Point<T>& tr, const Point<T>& br, const Point<T>& bl)
+        : topLeft(std::make_unique<Point<T>>(tl)),
+          topRight(std::make_unique<Point<T>>(tr)),
+          bottomRight(std::make_unique<Point<T>>(br)),
+          bottomLeft(std::make_unique<Point<T>>(bl)) {}
+
+    double area() const override {
+        T a = topRight->x - topLeft->x;
+        T b = bottomRight->x - bottomLeft->x;
+        T h = topLeft->y - bottomLeft->y;
+        return static_cast<double>((a + b) * h / 2);
+    }
+
+    Point<T> geometricCenter() const override {
+        T centerX = (topLeft->x + topRight->x + bottomRight->x + bottomLeft->x) / static_cast<T>(4);
+        T centerY = (topLeft->y + topRight->y + bottomRight->y + bottomLeft->y) / static_cast<T>(4);
+        return Point<T>(centerX, centerY);
+    }
+
+    void print() const override {
+        std::cout << "Вершины трапеции: ";
+        topLeft->print(); std::cout << ", ";
+        topRight->print(); std::cout << ", ";
+        bottomRight->print(); std::cout << ", ";
+        bottomLeft->print(); std::cout << "\n";
+        std::cout << "Area: " << area() << "\n";
+    }
+
+    void input() {
+        std::cout << "Enter top-left point (x y): ";
+        topLeft->input();
+        std::cout << "Enter top-right point (x y): ";
+        topRight->input();
+        std::cout << "Enter bottom-right point (x y): ";
+        bottomRight->input();
+        std::cout << "Enter bottom-left point (x y): ";
+        bottomLeft->input();
+    }
+
+    std::unique_ptr<Figure<T>> clone() const override {
+        return std::make_unique<Trapezoid<T>>(*this);
+    }
+
+    Trapezoid(const Trapezoid<T>& other)
+        : topLeft(std::make_unique<Point<T>>(*other.topLeft)),
+          topRight(std::make_unique<Point<T>>(*other.topRight)),
+          bottomRight(std::make_unique<Point<T>>(*other.bottomRight)),
+          bottomLeft(std::make_unique<Point<T>>(*other.bottomLeft)) {}
+
+    Trapezoid(Trapezoid<T>&& other) noexcept
+        : topLeft(std::move(other.topLeft)),
+          topRight(std::move(other.topRight)),
+          bottomRight(std::move(other.bottomRight)),
+          bottomLeft(std::move(other.bottomLeft)) {}
+
+    Trapezoid<T>& operator=(const Trapezoid<T>& other) {
+        if (this != &other) {
+            *topLeft = *other.topLeft;
+            *topRight = *other.topRight;
+            *bottomRight = *other.bottomRight;
+            *bottomLeft = *other.bottomLeft;
+        }
+        return *this;
+    }
+
+    Trapezoid<T>& operator=(Trapezoid<T>&& other) noexcept {
+        if (this != &other) {
+            topLeft = std::move(other.topLeft);
+            topRight = std::move(other.topRight);
+            bottomRight = std::move(other.bottomRight);
+            bottomLeft = std::move(other.bottomLeft);
+        }
+        return *this;
+    }
+};

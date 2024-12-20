@@ -1,91 +1,83 @@
 #include <iostream>
-#include "include/Array.h"
+#include <memory>
+#include "include/Point.h"
+#include "include/Figure.h"
 #include "include/Rectangle.h"
 #include "include/Trapezoid.h"
 #include "include/Rhombus.h"
-
-using namespace std;
+#include "include/Array.h"
 
 int main() {
-    Array<std::shared_ptr<Figure<double>>> figures;
+    try {
+        Array<Figure<int>> figuresArray;
 
-    int choice;
-    while (true) {
-        cout << "Выберите действие:\n";
-        cout << "1. Добавить прямоугольник\n";
-        cout << "2. Добавить трапецию\n";
-        cout << "3. Добавить ромб\n";
-        cout << "4. Вывести все фигуры\n";
-        cout << "5. Удалить фигуру по индексу\n";
-        cout << "6. Вычислить общую площадь\n";
-        cout << "0. Выйти\n";
-        cin >> choice;
+        int choice;
+        while (true) {
+            std::cout << "\nМеню:\n";
+            std::cout << "1. Добавить Прямоугольник\n";
+            std::cout << "2. Добавить Трапецию\n";
+            std::cout << "3. Добавить Ромб\n";
+            std::cout << "4. Вывести все фигуры\n";
+            std::cout << "5. Вычислить общую площадь\n";
+            std::cout << "6. Удалить фигуру по индексу\n";
+            std::cout << "7. Выход\n";
+            std::cout << "Выберите опцию: ";
+            std::cin >> choice;
 
-        if (choice == 0) break;
-
-        switch (choice) {
-            case 1: {
-                vector<unique_ptr<Point<double>>> vertices;
-                for (size_t i = 0; i < 4; ++i) {
-                    auto point = make_unique<Point<double>>();
-                    cin >> *point;
-                    vertices.push_back(move(point));
-                }
-                auto rect = make_shared<Rectangle<double>>(vertices);
-                figures.add(rect);
-                break;
+            if(choice == 1) {
+                auto rect = std::make_unique<Rectangle<int>>();
+                rect->input();
+                figuresArray.add(std::move(rect));
+                std::cout << "Прямоугольник добавлен.\n";
             }
-            case 2: {
-                vector<unique_ptr<Point<double>>> vertices;
-                for (size_t i = 0; i < 4; ++i) {
-                    auto point = make_unique<Point<double>>();
-                    cin >> *point;
-                    vertices.push_back(move(point));
-                }
-                auto trap = make_shared<Trapezoid<double>>(vertices);
-                figures.add(trap);
-                break;
+            else if(choice == 2) {
+                auto trapezoid = std::make_unique<Trapezoid<int>>();
+                trapezoid->input();
+                figuresArray.add(std::move(trapezoid));
+                std::cout << "Трапеция добавлена.\n";
             }
-            case 3: {
-                vector<unique_ptr<Point<double>>> vertices;
-                for (size_t i = 0; i < 4; ++i) {
-                    auto point = make_unique<Point<double>>();
-                    cin >> *point;
-                    vertices.push_back(move(point));
-                }
-                auto rhomb = make_shared<Rhombus<double>>(vertices);
-                figures.add(rhomb);
-                break;
+            else if(choice == 3) {
+                auto rhombus = std::make_unique<Rhombus<int>>();
+                rhombus->input();
+                figuresArray.add(std::move(rhombus));
+                std::cout << "Ромб добавлен.\n";
             }
-            case 4: {
-                for (size_t i = 0; i < figures.size(); ++i) {
-                    cout << "Фигура " << i << ":\n";
-                    figures[i]->print(cout);
-                    cout << "\nГеометрический центр: ("
-                              << figures[i]->getGeometricCenter().first << ", "
-                              << figures[i]->getGeometricCenter().second << ")\n";
-                    cout << "Площадь: " << static_cast<double>(*figures[i]) << "\n";
+            else if(choice == 4) {
+                std::cout << "\nФигуры в массиве:\n";
+                for(size_t i = 0; i < figuresArray.size(); ++i) {
+                    std::cout << "Фигура " << i << ":\n";
+                    figuresArray[i].print();
+                    std::cout << "Геометрический центр: ";
+                    Point<int> center = figuresArray[i].geometricCenter();
+                    center.print();
+                    std::cout << "\n\n";
                 }
-                break;
             }
-            case 5: {
+            else if(choice == 5) {
+                double totalArea = 0.0;
+                for(size_t i = 0; i < figuresArray.size(); ++i) {
+                    totalArea += figuresArray[i].area();
+                }
+                std::cout << "Общая площадь всех фигур: " << totalArea << "\n";
+            }
+            else if(choice == 6) {
                 size_t index;
-                cout << "Введите индекс фигуры для удаления: ";
-                cin >> index;
-                figures.remove(index);
+                std::cout << "Введите индекс для удаления: ";
+                std::cin >> index;
+                figuresArray.remove_at(index);
+                std::cout << "Фигура удалена.\n";
+            }
+            else if(choice == 7) {
+                std::cout << "Выход из программы.\n";
                 break;
             }
-            case 6: {
-                double totalArea = 0;
-                for (size_t i = 0; i < figures.size(); ++i) {
-                    totalArea += static_cast<double>(*figures[i]);
-                }
-                cout << "Общая площадь всех фигур: " << totalArea << "\n";
-                break;
+            else {
+                std::cout << "Неверный выбор. Попробуйте снова.\n";
             }
-            default:
-                cout << "Неверный выбор\n";
         }
+    }
+    catch(const std::exception& e) {
+        std::cerr << "Ошибка: " << e.what() << "\n";
     }
 
     return 0;

@@ -1,145 +1,88 @@
 #include <gtest/gtest.h>
-#include "Rectangle.h"
-#include "Trapezoid.h"
-#include "Rhombus.h"
-#include "Point.h"
+#include "../include/Point.h"
+#include "../include/Figure.h"
+#include "../include/Rectangle.h"
+#include "../include/Trapezoid.h"
+#include "../include/Rhombus.h"
+#include "../include/Array.h"
 
-const double Eps = 1e-6;
-
-using namespace std;
-
-TEST(FigureTest, RectangleArea) {
-    vector<unique_ptr<Point<double>>> vertices;
-    vertices.push_back(make_unique<Point<double>>(0, 0));
-    vertices.push_back(make_unique<Point<double>>(1, 0));
-    vertices.push_back(make_unique<Point<double>>(1, 1));
-    vertices.push_back(make_unique<Point<double>>(0, 1));
-    Rectangle<double> r(vertices);
-    ASSERT_NEAR(static_cast<double>(r), 1.0, Eps);
+TEST(PointTest, ConstructorAndPrint) {
+    Point<int> p1;
+    EXPECT_EQ(p1.x, 0);
+    EXPECT_EQ(p1.y, 0);
+    Point<double> p2(3.5, -2.1);
+    EXPECT_DOUBLE_EQ(p2.x, 3.5);
+    EXPECT_DOUBLE_EQ(p2.y, -2.1);
 }
 
-TEST(FigureTest, TrapezoidArea) {
-    vector<unique_ptr<Point<double>>> vertices;
-    vertices.push_back(make_unique<Point<double>>(0, 0));
-    vertices.push_back(make_unique<Point<double>>(2, 0));
-    vertices.push_back(make_unique<Point<double>>(1, 1));
-    vertices.push_back(make_unique<Point<double>>(3, 1));
-    Trapezoid<double> t(vertices);
-    ASSERT_NEAR(static_cast<double>(t), 2.0, Eps);
+TEST(RectangleTest, AreaCalculation) {
+    Point<int> tl(0, 2);
+    Point<int> tr(3, 2);
+    Point<int> br(3, 0);
+    Point<int> bl(0, 0);
+    Rectangle<int> rect(tl, tr, br, bl);
+    EXPECT_EQ(rect.area(), 6.0);
 }
 
-TEST(FigureTest, RhombusArea) {
-    vector<unique_ptr<Point<double>>> vertices;
-    vertices.push_back(make_unique<Point<double>>(0, 0));
-    vertices.push_back(make_unique<Point<double>>(1, 0));
-    vertices.push_back(make_unique<Point<double>>(1, 1));
-    vertices.push_back(make_unique<Point<double>>(0, 1));
-    Rhombus<double> r(vertices);
-    ASSERT_NEAR(static_cast<double>(r), 1.0, Eps);
+TEST(TrapezoidTest, GeometricCenter) {
+    Point<int> tl(1, 3);
+    Point<int> tr(4, 3);
+    Point<int> br(5, 0);
+    Point<int> bl(0, 0);
+    Trapezoid<int> trap(tl, tr, br, bl);
+    Point<int> center = trap.geometricCenter();
+    EXPECT_EQ(center.x, 2.5);
+    EXPECT_EQ(center.y, 1.5);
 }
 
-TEST(FigureTest, RectangleGeometricCenter) {
-    vector<unique_ptr<Point<double>>> vertices;
-    vertices.push_back(make_unique<Point<double>>(0, 0));
-    vertices.push_back(make_unique<Point<double>>(2, 0));
-    vertices.push_back(make_unique<Point<double>>(2, 2));
-    vertices.push_back(make_unique<Point<double>>(0, 2));
-    Rectangle<double> r(vertices);
-    auto center = r.getGeometricCenter();
-    ASSERT_NEAR(center.first, 1.0, Eps);
-    ASSERT_NEAR(center.second, 1.0, Eps);
+TEST(RhombusTest, AreaCalculation) {
+    Point<int> v1(0, 0);
+    Point<int> v2(2, 2);
+    Point<int> v3(4, 0);
+    Point<int> v4(2, -2);
+    Rhombus<int> rhomb(v1, v2, v3, v4);
+    EXPECT_EQ(rhomb.area(), 8.0);
 }
 
-TEST(FigureTest, TrapezoidGeometricCenter) {
-    vector<unique_ptr<Point<double>>> vertices;
-    vertices.push_back(make_unique<Point<double>>(0, 0));
-    vertices.push_back(make_unique<Point<double>>(2, 0));
-    vertices.push_back(make_unique<Point<double>>(1, 1));
-    vertices.push_back(make_unique<Point<double>>(3, 1));
-    Trapezoid<double> t(vertices);
-    auto center = t.getGeometricCenter();
-    ASSERT_NEAR(center.first, 1.5, Eps);
-    ASSERT_NEAR(center.second, 0.5, Eps);
+TEST(FigureTest, Comparison) {
+    Point<int> tl(0, 2);
+    Point<int> tr(3, 2);
+    Point<int> br(3, 0);
+    Point<int> bl(0, 0);
+    Rectangle<int> rect1(tl, tr, br, bl);
+    Rectangle<int> rect2(tl, tr, br, bl);
+    EXPECT_TRUE(rect1 == rect2);
 }
 
-TEST(FigureTest, RhombusGeometricCenter) {
-    vector<unique_ptr<Point<double>>> vertices;
-    vertices.push_back(make_unique<Point<double>>(0, 0));
-    vertices.push_back(make_unique<Point<double>>(1, 0));
-    vertices.push_back(make_unique<Point<double>>(1, 1));
-    vertices.push_back(make_unique<Point<double>>(0, 1));
-    Rhombus<double> r(vertices);
-    auto center = r.getGeometricCenter();
-    ASSERT_NEAR(center.first, 0.5, Eps);
-    ASSERT_NEAR(center.second, 0.5, Eps);
+TEST(FigureTest, DoubleConversion) {
+    Point<int> tl(0, 2);
+    Point<int> tr(3, 2);
+    Point<int> br(3, 0);
+    Point<int> bl(0, 0);
+    Rectangle<int> rect(tl, tr, br, bl);
+    double area = static_cast<double>(rect);
+    EXPECT_EQ(area, 6.0);
 }
 
-TEST(FigureTest, RectangleEquality) {
-    vector<unique_ptr<Point<double>>> vertices1;
-    vertices1.push_back(make_unique<Point<double>>(0, 0));
-    vertices1.push_back(make_unique<Point<double>>(1, 0));
-    vertices1.push_back(make_unique<Point<double>>(1, 1));
-    vertices1.push_back(make_unique<Point<double>>(0, 1));
-    Rectangle<double> r1(vertices1);
-
-    vector<unique_ptr<Point<double>>> vertices2;
-    vertices2.push_back(make_unique<Point<double>>(0, 0));
-    vertices2.push_back(make_unique<Point<double>>(1, 0));
-    vertices2.push_back(make_unique<Point<double>>(1, 1));
-    vertices2.push_back(make_unique<Point<double>>(0, 1));
-    Rectangle<double> r2(vertices2);
-
-    ASSERT_TRUE(r1 == r2);
+TEST(ArrayTest, AddAndAccessFigure) {
+    Array<std::unique_ptr<Figure<int>>> array;
+    Point<int> tl(0, 2);
+    Point<int> tr(3, 2);
+    Point<int> br(3, 0);
+    Point<int> bl(0, 0);
+    Rectangle<int> rect(tl, tr, br, bl);
+    EXPECT_EQ(array.size(), 1);
 }
 
-TEST(FigureTest, TrapezoidEquality) {
-    vector<unique_ptr<Point<double>>> vertices1;
-    vertices1.push_back(make_unique<Point<double>>(0, 0));
-    vertices1.push_back(make_unique<Point<double>>(2, 0));
-    vertices1.push_back(make_unique<Point<double>>(1, 1));
-    vertices1.push_back(make_unique<Point<double>>(3, 1));
-    Trapezoid<double> t1(vertices1);
-
-    vector<unique_ptr<Point<double>>> vertices2;
-    vertices2.push_back(make_unique<Point<double>>(0, 0));
-    vertices2.push_back(make_unique<Point<double>>(2, 0));
-    vertices2.push_back(make_unique<Point<double>>(1, 1));
-    vertices2.push_back(make_unique<Point<double>>(3, 1));
-    Trapezoid<double> t2(vertices2);
-
-    ASSERT_TRUE(t1 == t2);
-}
-
-TEST(FigureTest, RhombusEquality) {
-    vector<unique_ptr<Point<double>>> vertices1;
-    vertices1.push_back(make_unique<Point<double>>(0, 0));
-    vertices1.push_back(make_unique<Point<double>>(1, 0));
-    vertices1.push_back(make_unique<Point<double>>(1, 1));
-    vertices1.push_back(make_unique<Point<double>>(0, 1));
-    Rhombus<double> r1(vertices1);
-
-    vector<unique_ptr<Point<double>>> vertices2;
-    vertices2.push_back(make_unique<Point<double>>(0, 0));
-    vertices2.push_back(make_unique<Point<double>>(1, 0));
-    vertices2.push_back(make_unique<Point<double>>(1, 1));
-    vertices2.push_back(make_unique<Point<double>>(0, 1));
-    Rhombus<double> r2(vertices2);
-
-    ASSERT_TRUE(r1 == r2);
-}
-
-TEST(FigureTest, ArrayAddRemove) {
-    Array<shared_ptr<Figure<double>>> figures;
-    vector<std::unique_ptr<Point<double>>> vertices;
-    vertices.push_back(make_unique<Point<double>>(0, 0));
-    vertices.push_back(make_unique<Point<double>>(1, 0));
-    vertices.push_back(make_unique<Point<double>>(1, 1));
-    vertices.push_back(make_unique<Point<double>>(0, 1));
-    auto rect = make_shared<Rectangle<double>>(vertices);
-    figures.add(rect);
-    ASSERT_EQ(figures.size(), 1);
-    figures.remove(0);
-    ASSERT_EQ(figures.size(), 0);
+TEST(FigureTest, Cloning) {
+    Point<int> tl(0, 2);
+    Point<int> tr(3, 2);
+    Point<int> br(3, 0);
+    Point<int> bl(0, 0);
+    Rectangle<int> rect(tl, tr, br, bl);
+    auto cloneRect = rect.clone();
+    EXPECT_EQ(rect.area(), cloneRect->area());
+    EXPECT_TRUE(rect == *cloneRect);
 }
 
 int main(int argc, char **argv) {

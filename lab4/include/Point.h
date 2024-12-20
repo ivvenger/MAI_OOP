@@ -1,35 +1,23 @@
-#ifndef POINT_H
-#define POINT_H
+#pragma once
+#include "scalar.h"
 #include <iostream>
-#include <concepts>
-
-template <typename T>
-
-concept Scalar = std::is_arithmetic_v<T>;
 
 template <Scalar T>
 class Point {
 public:
-    Point(T x = 0, T y = 0) : x(x), y(y) {}
+    T x;
+    T y;
 
-    T getX() const { return x; }
-    T getY() const { return y; }
-
-    void setX(T x) { this->x = x; }
-    void setY(T y) { this->y = y; }
-
-    friend std::ostream& operator<<(std::ostream& os, const Point<T>& point) {
-        os << "(" << point.x << ", " << point.y << ")";
-        return os;
+    Point() : x(0), y(0) {}
+    Point(T x_val, T y_val) : x(x_val), y(y_val) {}
+    void input() {
+        std::cin >> x >> y;
+    }
+    void print() const {
+        std::cout << "(" << x << ", " << y << ")";
     }
 
-    friend std::istream& operator>>(std::istream& is, Point<T>& point) {
-        is >> point.x >> point.y;
-        return is;
+    bool operator==(const Point<T>& other) const {
+        return (x == other.x) && (y == other.y);
     }
-
-private:
-    T x, y;
 };
-
-#endif
